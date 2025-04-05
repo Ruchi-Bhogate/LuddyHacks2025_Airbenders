@@ -27,9 +27,9 @@ async function uploadAudioToAssemblyAI(pathToFile) {
   return response.data.upload_url;
 }
 
-router.get("/test", async (req, res) => {
+router.get("/test", async (req, res) => { 
     try {
-      const audioPath = path.join(__dirname, "../audio/sample.mp3");
+      const audioPath = path.join(__dirname, "../audio/Ruchi and Aditi 1.mp3");
       console.log("🟡 Step 1: Audio path resolved:", audioPath);
   
       if (!fs.existsSync(audioPath)) {
@@ -75,7 +75,6 @@ router.get("/test", async (req, res) => {
             id: transcript.data.id,
             text: transcript.data.text,
             utterances: transcript.data.utterances || [],
-            sentiment_analysis_results: transcript.data.sentiment_analysis_results || []
           };
 
           return res.json(formattedResponse);
@@ -93,5 +92,40 @@ router.get("/test", async (req, res) => {
       return res.status(500).json({ error: "Unexpected server error", details: err.message });
     }
   });
+
+router.get("/sentiment/:id", async (req, res) => {
+  try {
+    const transcriptId = req.params.id;
+    const response = await axios.get(`https://api.assemblyai.com/v2/transcript/${transcriptId}`, { headers });
+    const sentiments = response.data.sentiment_analysis_results || [];
+
+    let score = 0;
+    let sentimentCount = { positive: 0, neutral: 0, negative: 0 };
+
+    sentiments.forEach(s => {
+      const type = s.sentiment.toLowerCase();
+      if (sentimentCount[type] !== undefined) {
+        sentimentCount[type]++;
+      }
+    });
+
+    const total = sentiments.length;
+    if (total > 0) {
+      score = Math.round(
+        ((sentimentCount.positive * 5 + sentimentCount.neutral * 3 + sentimentCount.negative * 1) / (total * 5)) * 5
+      );
+    }
+
+    let emoji = "😐";
+    if (sentimentCount.positive > sentimentCount.negative && sentimentCount.positive > sentimentCount.neutral) emoji = "😊";
+    else if (sentimentCount.negative > sentimentCount.positive) emoji = "😞";
+    else if (sentimentCount.neutral > sentimentCount.positive && sentimentCount.neutral > sentimentCount.negative) emoji = "😐";
+
+    return res.json({ csat_score: score, mood: emoji, counts: sentimentCount });
+  } catch (err) {
+    console.error("💥 Error fetching sentiment:", err.message);
+    return res.status(500).json({ error: "Failed to fetch sentiment analysis", details: err.message });
+  }
+});
 
 module.exports = router;
