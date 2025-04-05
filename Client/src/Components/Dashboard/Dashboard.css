@@ -1,0 +1,105 @@
+/* DashboardPage.css */
+
+.dashboard-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #121212;
+    /* padding: 40px; */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .main-panel {
+    background: linear-gradient(135deg, #1f1c2c, #928dab);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    width: 100%;
+    /* max-width: 600px; */
+    text-align: center;
+    color: #ffffff;
+  }
+  
+  .dashboard-title {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    color: #e0b3ff;
+  }
+  
+  .action-buttons.side-by-side {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+  
+  
+  .upload-btn,
+  .live-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s ease;
+  }
+  
+  .upload-btn {
+    background-color: #9b59b6;
+    color: white;
+  }
+  
+  .upload-btn:hover {
+    background-color: #8e44ad;
+  }
+  
+  .live-btn {
+    background-color: #27ae60;
+    color: white;
+  }
+  
+  .live-btn:hover {
+    background-color: #1e874b;
+  }
+  
+  .chart-section {
+    margin: 40px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
+  
+  .chart-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #f0e6ff;
+  }
+  
+  .stat-box {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+  }
+  
+  .stat-box h2 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #e6e6e6;
+  }
+  
+  .customer-count {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #f1c40f;
+  }
+  .stats{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
