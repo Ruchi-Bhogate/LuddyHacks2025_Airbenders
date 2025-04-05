@@ -93,6 +93,32 @@ router.get("/test", async (req, res) => {
     }
   });
 
+  router.post("/transcribe/start", async (req, res) => {
+    const { fileName } = req.body;
+    const audioPath = path.join(__dirname, "../audio", fileName);
+  
+    const audioURL = await uploadAudioToAssemblyAI(audioPath);
+  
+    const response = await axios.post(
+      "https://api.assemblyai.com/v2/transcript",
+      {
+        audio_url: audioURL,
+        speaker_labels: true,
+        sentiment_analysis: true,
+        speakers_expected: 2,
+        auto_chapters: false,
+        punctuate: true,
+      },
+      { headers }
+    );
+  
+    const transcriptId = response.data.id;
+  
+    // Optionally store this in DB/file
+    res.json({ transcriptId });
+  });
+
+
 router.get("/sentiment/:id", async (req, res) => {
   try {
     const transcriptId = req.params.id;
@@ -126,6 +152,53 @@ router.get("/sentiment/:id", async (req, res) => {
     console.error("💥 Error fetching sentiment:", err.message);
     return res.status(500).json({ error: "Failed to fetch sentiment analysis", details: err.message });
   }
+});
+
+// Step 3: Get transcription result
+router.get("/transcribe/result/:id", async (req, res) => {
+  try {
+    const transcriptId = req.params.id;
+    let polling = true;
+    let attempt = 1;
+    let transcript;
+
+    while (polling) {
+      console.log(`Polling transcript ID ${transcriptId}, attempt ${attempt}`);
+      const response = await axios.get(`https://api.assemblyai.com/v2/transcript/${transcriptId}`, { headers });
+      const status = response.data.status;
+
+      if (status === "completed") {
+        polling = false;
+        transcript = response.data;
+      } else if (status === "error") {
+        return res.status(500).json({ error: "Transcription failed" });
+      } else {
+        attempt++;
+        await new Promise(resolve => setTimeout(resolve, 3000));
+      }
+    }
+
+    const result = {
+      transcriptId: transcript.id,
+      text: transcript.text,
+      utterances: transcript.utterances || [],
+      mediaUrl: `/media/audio/${transcript.audio_url?.split("/").pop() || "unknown.mp3"}`
+    };
+
+    return res.json(result);
+  } catch (err) {
+    console.error("Error fetching result:", err.message);
+    return res.status(500).json({ error: "Failed to fetch transcript", details: err.message });
+  }
+});
+
+// Step 4: Serve audio file for playback
+router.get("/media/audio/:fileName", (req, res) => {
+  const filePath = path.join(__dirname, "../audio", req.params.fileName);
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).send("Audio file not found");
+  }
+  res.sendFile(filePath);
 });
 
 module.exports = router;
