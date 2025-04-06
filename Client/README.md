@@ -1,70 +1,55 @@
-# Getting Started with Create React App
+# 📞 Scribbie: AI-Powered Customer Support Call Analyzer
+*Luddy Hacks 2025 Submission by Team Airbenders*
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 🚀 Overview
 
-## Available Scripts
+CallSage is an AI-driven tool that automatically transcribes, summarizes, and analyzes customer support calls to extract valuable insights like customer sentiment, follow-up tasks, objections, and satisfaction levels — all in real-time or after the call.
 
-In the project directory, you can run:
+Whether you're running support, sales, or service teams, CallSage helps you:
+- Save time on manual notes
+- Track customer concerns
+- Identify follow-up actions
+- Gauge sentiment and CSAT score
+- Export comprehensive PDF reports
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🎯 Use Case
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+> Designed specifically for **Customer Support and Sales Calls**, CallSage acts like a virtual assistant that listens, understands, and structures your conversations into actionable insights.
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🧠 Features
 
-### `npm run build`
+- 🎙️ Audio upload or recording support (MP3/WAV)
+- 📝 Real-time transcription (using AssemblyAI or Whisper)
+- 🧾 GPT-powered call summarization (via Mistral)
+- ✅ Action item extraction (who does what, by when)
+- 😐 Sentiment analysis + CSAT scoring
+- 📌 Objection/request/concern tracking
+- 📄 Downloadable PDF reports
+- 📊 Sentiment pie chart and satisfaction slider
+- 🧠 To-Do list auto-generated from conversation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🛠️ Tech Stack
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+| Layer        | Tech Used                        |
+|--------------|----------------------------------|
+| Frontend     | React, Tailwind CSS, Recharts    |
+| Backend      | Node.js, Express                 |
+| AI & NLP     | AssemblyAI, Mistral, OpenAI (alt)|
+| File Handling| Multer, fs                       |
+| PDF Export   | jsPDF                            |
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🖥️ Setup Instructions
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 1. Clone the Repo
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```bash
+git clone https://github.com/your-username/CallSage.git
+cd CallSage
