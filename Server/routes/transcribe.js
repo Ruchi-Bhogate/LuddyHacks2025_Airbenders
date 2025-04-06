@@ -93,12 +93,17 @@ router.get("/test", async (req, res) => {
     }
   });
 
-  router.post("/transcribe/start", async (req, res) => {
+router.post("/transcribe/start", async (req, res) => {
+  try {
     const { fileName } = req.body;
     const audioPath = path.join(__dirname, "../audio", fileName);
-  
+
+    if (!fs.existsSync(audioPath)) {
+      return res.status(404).json({ error: "Audio file not found" });
+    }
+
     const audioURL = await uploadAudioToAssemblyAI(audioPath);
-  
+
     const response = await axios.post(
       "https://api.assemblyai.com/v2/transcript",
       {
@@ -111,13 +116,15 @@ router.get("/test", async (req, res) => {
       },
       { headers }
     );
-  
-    const transcriptId = response.data.id;
-  
-    // Optionally store this in DB/file
-    res.json({ transcriptId });
-  });
 
+    const transcriptId = response.data.id;
+
+    res.json({ transcriptId });
+  } catch (err) {
+    console.error("💥 Transcription start failed:", err.message);
+    res.status(500).json({ error: "Transcription failed", details: err.message });
+  }
+});
 
 router.get("/sentiment/:id", async (req, res) => {
   try {
@@ -182,7 +189,13 @@ router.get("/transcribe/result/:id", async (req, res) => {
       transcriptId: transcript.id,
       text: transcript.text,
       utterances: transcript.utterances || [],
-      mediaUrl: `/media/audio/${transcript.audio_url?.split("/").pop() || "unknown.mp3"}`
+      mediaUrl: `/media/audio/${transcript.audio_url?.split("/").pop() || "unknown.mp3"}`,
+      segments: (transcript.utterances || []).map(u => ({
+        speaker: u.speaker,
+        text: u.text,
+        start: u.start,
+        end: u.end
+      }))
     };
 
     return res.json(result);
@@ -194,7 +207,8 @@ router.get("/transcribe/result/:id", async (req, res) => {
 
 // Step 4: Serve audio file for playback
 router.get("/media/audio/:fileName", (req, res) => {
-  const filePath = path.join(__dirname, "../audio", req.params.fileName);
+  const fileName = req.params.fileName;
+  const filePath = path.join(__dirname, "../audio", fileName);
   if (!fs.existsSync(filePath)) {
     return res.status(404).send("Audio file not found");
   }
