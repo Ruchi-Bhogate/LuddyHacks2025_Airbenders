@@ -27,6 +27,11 @@ function TranscriptPage() {
   const [status, setStatus] = useState("queued"); 
   
   // const transcriptText = ''; // placeholder since we're using utterances now
+  const [csatData, setCsatData] = useState({
+    csat_score: 0,
+    mood: '😐',
+    counts: { positive: 0, neutral: 0, negative: 0 }
+  });
 
   useEffect(() => {
     if (!transcriptId) return;
@@ -74,6 +79,14 @@ function TranscriptPage() {
         });
     }, 3000);
 
+        // Fetch sentiment data once
+        fetch(`http://localhost:4000/api/transcribe/sentiment/${transcriptId}`)
+        .then(res => res.json())
+        .then(data => {
+          setCsatData(data);
+        })
+        .catch(err => console.error("Sentiment fetch error:", err));
+  
     return () => clearInterval(interval);
   }, [transcriptId]);
 
@@ -202,14 +215,16 @@ function TranscriptPage() {
 
   };
 
-  const csatData = {
-    csat_score: 3,
-    mood: '😐',
-    counts: { positive: 3, neutral: 13, negative: 20 }
-  };
-  
+  // const csatData = {
+  //   csat_score: 3,
+  //   mood: '😐',
+  //   counts: { positive: 3, neutral: 13, negative: 20 }
+  // };
   const total = csatData.counts.positive + csatData.counts.neutral + csatData.counts.negative;
-  const satisfactionPercentage = ((csatData.counts.positive + csatData.counts.neutral) / total) * 100;
+  const satisfactionPercentage = total > 0 ? ((csatData.counts.positive + csatData.counts.neutral/2) / total) * 100 : 0;
+
+  
+  // const satisfactionPercentage = ((csatData.counts.positive + csatData.counts.neutral) / total) * 100;
   
   const pieChartData = [
     { name: 'Positive', value: csatData.counts.positive },
@@ -252,7 +267,7 @@ function TranscriptPage() {
 
           <div className="transcript-container">
           {utterances
-            .filter(utt => utt.start <= currentTime) // 👈 only show up to current time
+            .filter(utt => utt.start <= currentTime) 
             .map((utt, index) => {
               const isActive = currentTime >= utt.start && currentTime <= utt.end;
               return (

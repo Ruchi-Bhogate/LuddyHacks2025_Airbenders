@@ -50,6 +50,16 @@ app.use("/api/transcribe", transcribeRoute); // ✅ mounts the /test route
 //       res.status(500).json({ error: "Failed to process transcript" });
 //     }
 //   });
-
+app.get("/api/transcribe/sentiment/:transcriptId", async (req, res) => {
+  const { transcriptId } = req.params;
+  try {
+    // Logic to fetch sentiment data based on transcriptId
+    const sentimentData = await getSentimentData(transcriptId); // Placeholder for actual data fetching logic
+    res.json(sentimentData);
+  } catch (error) {
+    console.error("Error fetching sentiment data:", error);
+    res.status(500).json({ error: "Failed to fetch sentiment data" });
+  }
+});
 
 app.listen(4000, '127.0.0.1', () => console.log("Server started on 127.0.0.1:4000"));
