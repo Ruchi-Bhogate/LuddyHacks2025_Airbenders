@@ -21,7 +21,7 @@ function UploadRecording() {
 
     try {
       // Step 1: Upload the file
-      const uploadResponse = await fetch("http://localhost:4000/upload", {
+      const uploadResponse = await fetch("http://localhost:4000/api/transcribe/upload", {
         method: "POST",
         body: formData,
       });

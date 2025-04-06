@@ -20,16 +20,58 @@ function TranscriptPage() {
   const utteranceRefs = useRef([]);
 
   const transcriptId = location.state?.transcriptId;
+
+  const [status, setStatus] = useState("queued"); 
   
   // const transcriptText = ''; // placeholder since we're using utterances now
 
   useEffect(() => {
     if (!transcriptId) return;
-    fetch(`http://localhost:4000/api/transcribe/transcribe/result/${transcriptId}`)
-      .then(res => res.json())
-      .then(data => {
-        setUtterances(data.utterances || []);
-      });
+    // fetch(`http://localhost:4000/api/transcribe/transcribe/result/${transcriptId}`)
+    //   .then(res => res.json())
+    //   .then(data => {
+    //     setUtterances(data.utterances || []);
+    //   });
+
+    // const interval = setInterval(() => {
+    //   fetch(`http://localhost:4000/api/transcribe/progress/${transcriptId}`)
+    //     .then(res => res.json())
+    //     .then(data => {
+    //       setUtterances(data.utterances || []);
+    //       if (data.status === "completed") {
+    //         clearInterval(interval);
+    //       }
+    //     })
+    //     .catch(err => {
+    //       console.error("Polling error:", err);
+    //     });
+    // }, 3000); // poll every 3 seconds
+    const interval = setInterval(() => {
+      fetch(`http://localhost:4000/api/transcribe/progress/${transcriptId}`)
+        .then(res => res.json())
+        .then(data => {
+          setStatus(data.status);
+          setUtterances(data.utterances || []);
+          setUtterances((prevUtterances) => {
+            // const existingIds = new Set(prevUtterances.map(u => u.start));
+            // const newUtterances = (data.utterances || []).filter(u => !existingIds.has(u.start));
+            // return [...prevUtterances, ...newUtterances];
+            const currentAudioTime = audioRef.current?.currentTime * 1000 || 0;
+            const allNew = (data.utterances || []).filter(u => u.start <= currentAudioTime);
+            const existingStarts = new Set(prevUtterances.map(u => u.start));
+            const newUtterances = allNew.filter(u => !existingStarts.has(u.start));
+            return [...prevUtterances, ...newUtterances].sort((a, b) => a.start - b.start);
+          });
+          if (data.status === "completed") {
+            clearInterval(interval);
+          }
+        })
+        .catch(err => {
+          console.error("Polling error:", err);
+        });
+    }, 3000);
+
+    return () => clearInterval(interval);
   }, [transcriptId]);
 
   useEffect(() => {
@@ -182,8 +224,16 @@ function TranscriptPage() {
 
           <div className="transcript-heading">Transcript Conversation</div>
 
+          {status !== "completed" && (
+            <div className="transcribing-indicator">
+              <p>🕐 Transcription in progress... status: {status}</p>
+            </div>
+          )}
+
           <div className="transcript-container">
-            {utterances.map((utt, index) => {
+          {utterances
+            .filter(utt => utt.start <= currentTime) // 👈 only show up to current time
+            .map((utt, index) => {
               const isActive = currentTime >= utt.start && currentTime <= utt.end;
               return (
                 <p

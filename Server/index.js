@@ -24,8 +24,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use("/media/audio", express.static(path.join(__dirname, "audio")));
-app.use("/", uploadRouter);
-
+// app.use("/", uploadRouter);
+app.use("/api/transcribe", uploadRouter);
 app.use("/api/transcribe", transcribeRoute); // ✅ mounts the /test route
 
 // app.post("/api/process-transcript", async (req, res) => {
