@@ -1,0 +1,97 @@
+/* Header Styling */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px; /* Adjusted padding for compactness */
+    background-color: #121212;
+    color: white;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px; /* Fixed height for the header */
+    z-index: 1000; /* Ensure it stays on top of other content */
+  }
+  
+  /* Left Section: Logo and Tagline */
+  .left-section1 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 25px;
+  }
+  
+  .logo {
+    font-size: 2rem; /* Slightly smaller font size for compactness */
+    color: #e0b3ff;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin: 0;
+  }
+  
+  .tagline1 {
+    font-size: 1rem;
+    color: #a9a9a9;
+    font-family: 'Arial', sans-serif;
+    margin-top: 2px;
+    text-align: left;
+  }
+  
+  /* Right Section: Buttons */
+  .right-section1 {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  
+  .call-records-btn,  .dashboard-btn, .profile-btn{
+    background-color: #2a2a3d;
+    color: white;
+    padding: 8px 15px;
+    margin-left: 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease;
+  }
+  
+  .dashboard-btn:hover,  .call-records-btn:hover{
+    background-color: #9b59b6;
+  }
+  
+  .icon {
+    margin-right: 8px;
+    font-size: 1.3rem;
+  }
+  
+  .dashboard-btn{
+    margin-right: 10px;
+  }
+  .call-records-btn{
+    margin-right: 10px;
+  }
+  /* Optional: Hover Effect for Buttons */
+  .dashboard-btn:hover {
+    background-color: #8e44ad;
+    
+  }
+
+  .profile-btn:hover {
+    background-color: #e67e22;
+  }
+  
+  .call-records-btn:hover {
+    background-color: #3498db;
+  }
+  
+  /* Add margin to the body/content below the fixed header */
+  body {
+    margin-top: 80px; /* Adds space below the fixed header */
+  }
+  

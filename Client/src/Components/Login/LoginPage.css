@@ -1,0 +1,127 @@
+.login-page {
+  display: flex;
+  height: 100vh;
+  background-color: #121212;
+  color: #ffffff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Left Side */
+.left-section {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #1f1c2c, #928dab);
+  padding: 40px;
+  color: #fff;
+}
+
+.product-name {
+  font-size: 4rem; /* Increased size for visibility */
+  margin-bottom: 10px;
+  color: #e0b3ff;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.tagline {
+  font-size: 1.5rem; /* Adjusted font size for tagline */
+  color: white;  /* Change the color of the tagline */
+  margin-bottom: 40px;
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Keeping it consistent with the overall theme */
+}
+
+.static-line {
+  font-size: 1.3rem; /* Slightly smaller size for the static line */
+  color: #a9a9a9; /* Changed color to a softer grey */
+  font-family: 'Arial', sans-serif; /* Changed font to a more neutral one */
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.animated-line {
+  font-size: 1.3rem; /* Slightly larger size for the animated line */
+  text-align: center;
+  min-height: 2em;
+  color: #a9a9a9; /* Matching the color of the animated lines with the product name */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Same font family */
+  transition: all 0.8s ease;
+}
+
+/* Right Side */
+.right-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #1e1e2f;
+}
+
+/* Login Box */
+.login-box.dark {
+  background-color: #2a2a3d;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  width: 400px;
+  text-align: center;
+}
+
+.login-box.dark h2 {
+  margin-bottom: 20px;
+  color: #e0b3ff;
+}
+
+.login-box.dark input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 8px;
+  background-color: #3b3b4f;
+  color: white;
+}
+
+.login-box.dark input::placeholder {
+  color: #aaa;
+}
+
+.login-box.dark button {
+  width: 100%;
+  padding: 10px;
+  background-color: #9b59b6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.login-box.dark button:hover {
+  background-color: #8e44ad;
+}
+
+/* Sign Up Link */
+.signup-link {
+  color: #e0b3ff;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Optional Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
