@@ -50,6 +50,6 @@ app.use("/api/transcribe", transcribeRoute); // ✅ mounts the /test route
 //       res.status(500).json({ error: "Failed to process transcript" });
 //     }
 //   });
-  
+
 
 app.listen(4000, '127.0.0.1', () => console.log("Server started on 127.0.0.1:4000"));
