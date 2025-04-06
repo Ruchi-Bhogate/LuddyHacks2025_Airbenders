@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import Header from '../Header/Header';
 import './Dashboard.css';
+import TodoList from '../ToDo/TodoList';
+import { Link } from 'react-router-dom';  
 
 const satisfactionData = [
   { name: 'Satisfied', value: 65 },
@@ -53,11 +55,13 @@ function DashboardPage() {
 
       <div className="layout-container">
         {/* Left Widgets */}
-        <div className="right-panel">
+        <div className="right-panel1">
           <div className="action-buttons">
             <h2 className="section-title" style={{ textAlign: 'center', width: '100%' }}>Analyse New Customer Call</h2>
             <div className="buttons-group" style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
-              <button className="upload-btn">Upload Recording</button>
+              <Link to="/upload">
+                <button className="upload-btn">Upload Recording</button>
+              </Link>
               <button className="live-btn">Start Live Call</button>
             </div>
           </div>
@@ -65,16 +69,12 @@ function DashboardPage() {
           <div className="dashboard-widgets">
             <div className="widget-box">
               <h2 className="widget-title">To-Do List</h2>
-              <ul className="todo-list">
-                <li>Review yesterday's calls</li>
-                <li>Prepare summary for ticket #123456</li>
-                <li>Follow up with tech support team</li>
-              </ul>
+              <TodoList />
             </div>
 
             <div className="widget-box1">
               <h2 className="widget-title">Overall Customer Satisfaction</h2>
-              <PieChart width={250} height={250}>
+              <PieChart className='pie-test' width={250} height={250}>
                 <Pie
                   data={satisfactionData}
                   cx="50%"
