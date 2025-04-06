@@ -1,14 +1,20 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
+
 import { FaCheck, FaEdit, FaTrashAlt, FaTimes } from 'react-icons/fa'; // Added FaTimes for cancel edit
 import './TodoList.css'; // Import the styles for EditableTodoList
 
-const TodoList = ({ fromTranscript }) => {
-  const [todos, setTodos] = useState([
-    { text: 'Review yesterday\'s call with Liam Smith and follow up', isCompleted: false },
-    { text: 'Share summary for ticket #1006 with Logistics', isCompleted: false },
-    { text: 'Follow up with tech support team', isCompleted: false },
-    {text: 'Prepare a report on customer feedback trends.', isCompleted: true }
-  ]);
+const TodoList = ({ tasks = [], loading }) => {
+  const [todos, setTodos] = useState([]);
+
+  useEffect(() => {
+    // Capitalize and initialize todos with 'isCompleted' = false
+    const initTodos = tasks.map((task) => ({
+      text: task.charAt(0).toUpperCase() + task.slice(1),
+      isCompleted: false,
+    }));
+    setTodos(initTodos);
+  }, [tasks]);
   const [newTodo, setNewTodo] = useState('');
   const [editingIndex, setEditingIndex] = useState(null);
   const [editedTodo, setEditedTodo] = useState('');
@@ -52,25 +58,31 @@ const TodoList = ({ fromTranscript }) => {
   };
 
   return (
-    <div className={fromTranscript ? "todo-container-trans" : "todo-list"}>
-      <ul>
-        {todos.map((todo, index) => (
-          <li key={index} className={todo.isCompleted ? 'completed' : ''}>
-            <span>{todo.text}</span>
-            <div className="todo-actions">
-              <button onClick={() => handleToggleComplete(index)}>
-                <FaCheck color={todo.isCompleted ? '#2ecc71' : '#3498db'} />
-              </button>
-              <button onClick={() => handleEditTodo(index)}>
-                <FaEdit color="#f39c12" />
-              </button>
-              <button onClick={() => handleDeleteTodo(index)}>
-                <FaTrashAlt color="#e74c3c" />
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+    <div className="todo-list">
+
+     {loading ? (
+  <p>Loading...</p>
+) : (
+  <ul>
+    {todos.map((todo, index) => (
+      <li key={index} className={todo.isCompleted ? 'completed' : ''}>
+        <span>{todo.text}</span>
+        <div className="todo-actions">
+          <button onClick={() => handleToggleComplete(index)}>
+            <FaCheck color={todo.isCompleted ? '#2ecc71' : '#3498db'} />
+          </button>
+          <button onClick={() => handleEditTodo(index)}>
+            <FaEdit color="#f39c12" />
+          </button>
+          <button onClick={() => handleDeleteTodo(index)}>
+            <FaTrashAlt color="#e74c3c" />
+          </button>
+        </div>
+      </li>
+    ))}
+  </ul>
+)}
+
 
       <div>
         {editingIndex !== null ? (

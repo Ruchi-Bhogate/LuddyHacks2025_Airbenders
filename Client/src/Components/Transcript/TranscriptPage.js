@@ -6,7 +6,24 @@ import jsPDF from 'jspdf';
 import TodoList from '../ToDo/TodoList';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 
-
+function capitalizeSentence(str) {
+  return str
+    .split(';')
+    .map(part => {
+      const trimmed = part.trim();
+      return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+    })
+    .filter(Boolean); // remove empty strings
+}
+function capitalizeTaskItems(taskStr) {
+  return taskStr
+    .split(';')
+    .map(item => {
+      const trimmed = item.trim();
+      return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+    })
+    .filter(Boolean); // remove empty
+}
 function TranscriptPage() {
   const location = useLocation();
   const uploadedFile = location.state?.fileName;
@@ -18,9 +35,16 @@ function TranscriptPage() {
   const contactNumber = '+1 (585) 9810492';
 
   const [utterances, setUtterances] = useState([]);
+  const [summary, setSummary] = useState(null);
   const [currentTime, setCurrentTime] = useState(0);
   const audioRef = useRef(null);
   const utteranceRefs = useRef([]);
+  const [loadingTranscript, setLoadingTranscript] = useState(true);
+  const [loadingSummary, setLoadingSummary] = useState(true);
+  const [loadingTasks, setLoadingTasks] = useState(true);
+  const [sentimentLoading, setSentimentLoading] = useState(true);
+const [sentimentData, setSentimentData] = useState(null);
+
 
   const transcriptId = location.state?.transcriptId;
 
@@ -32,28 +56,82 @@ function TranscriptPage() {
     mood: '😐',
     counts: { positive: 0, neutral: 0, negative: 0 }
   });
+  // useEffect(() => {
+  //   if (!transcriptId) return;
+  //   fetch(`http://localhost:4000/api/transcribe/transcribe/result/${transcriptId}`)
+  //     .then(res => res.json())
+  //     .then(data => {
+  //       setUtterances(data.utterances || []);
+  //       setSummary(data.summary);
+  //       setLoadingTasks(false);
+  //       setLoadingTranscript(false);
+  //       setLoadingSummary(false); // ✅ mark summary loaded
+  //     })
+  //     .catch(err => {
+  //       console.error('Error fetching transcript data:', err);
+  //       setLoadingTranscript(false);
+  //       setLoadingSummary(false);
+  //     });
+  // }, [transcriptId]);
 
   useEffect(() => {
-    if (!transcriptId) return;
-    // fetch(`http://localhost:4000/api/transcribe/transcribe/result/${transcriptId}`)
-    //   .then(res => res.json())
-    //   .then(data => {
-    //     setUtterances(data.utterances || []);
-    //   });
+  if (!transcriptId) return;
 
-    // const interval = setInterval(() => {
-    //   fetch(`http://localhost:4000/api/transcribe/progress/${transcriptId}`)
-    //     .then(res => res.json())
-    //     .then(data => {
-    //       setUtterances(data.utterances || []);
-    //       if (data.status === "completed") {
-    //         clearInterval(interval);
-    //       }
-    //     })
-    //     .catch(err => {
-    //       console.error("Polling error:", err);
-    //     });
-    // }, 3000); // poll every 3 seconds
+  const interval = setInterval(() => {
+    fetch(`http://localhost:4000/api/transcribe/progress/${transcriptId}`)
+      .then(res => res.json())
+      .then(data => {
+        setStatus(data.status);
+
+        setUtterances((prevUtterances) => {
+          const currentAudioTime = audioRef.current?.currentTime * 1000 || 0;
+          const allNew = (data.utterances || []).filter(u => u.start <= currentAudioTime);
+          const existingStarts = new Set(prevUtterances.map(u => u.start));
+          const newUtterances = allNew.filter(u => !existingStarts.has(u.start));
+          return [...prevUtterances, ...newUtterances].sort((a, b) => a.start - b.start);
+        });
+
+        if (data.status === "completed") {
+          clearInterval(interval);
+
+          // ✅ Fetch everything once transcription is fully complete
+          fetch(`http://localhost:4000/api/transcribe/transcribe/result/${transcriptId}`)
+            .then(res => res.json())
+            .then(data => {
+              setUtterances(data.utterances || []);
+              setSummary(data.summary);
+              setLoadingTasks(false);
+              setLoadingTranscript(false);
+              setLoadingSummary(false);
+            })
+            .catch(err => {
+              console.error('Error fetching transcript data:', err);
+              setLoadingTranscript(false);
+              setLoadingSummary(false);
+            });
+
+          fetch(`http://localhost:4000/api/transcribe/sentiment/${transcriptId}`)
+            .then(res => res.json())
+            .then(data => {
+              setCsatData(data);
+              setSentimentLoading(false);
+            })
+            .catch(err => {
+              console.error("Sentiment fetch error:", err);
+              setSentimentLoading(false);
+            });
+        }
+      })
+      .catch(err => {
+        console.error("Polling error:", err);
+      });
+  }, 3000);
+
+  return () => clearInterval(interval);
+}, [transcriptId]);
+  useEffect(() => {
+    if (!transcriptId) return;
+   
     const interval = setInterval(() => {
       fetch(`http://localhost:4000/api/transcribe/progress/${transcriptId}`)
         .then(res => res.json())
@@ -78,6 +156,21 @@ function TranscriptPage() {
           console.error("Polling error:", err);
         });
     }, 3000);
+
+    fetch(`http://localhost:4000/api/transcribe/transcribe/result/${transcriptId}`)
+    .then(res => res.json())
+    .then(data => {
+      setUtterances(data.utterances || []);
+      setSummary(data.summary);
+      setLoadingTasks(false);
+      setLoadingTranscript(false);
+      setLoadingSummary(false); // ✅ mark summary loaded
+    })
+    .catch(err => {
+      console.error('Error fetching transcript data:', err);
+      setLoadingTranscript(false);
+      setLoadingSummary(false);
+    });
 
         // Fetch sentiment data once
         fetch(`http://localhost:4000/api/transcribe/sentiment/${transcriptId}`)
@@ -110,98 +203,31 @@ function TranscriptPage() {
   }, [currentTime, utterances]);
 
   const handleDownloadPDF = () => {
-    const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'pt',
-      format: 'a4',
-    });
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
   
     const margin = 40;
-    const pageHeight = doc.internal.pageSize.height;
     const lineHeight = 20;
-  
-    // const textLines = doc.splitTextToSize(transcriptText, doc.internal.pageSize.width - margin * 2);
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
     let y = margin;
   
-    // Add heading
-    doc.setFontSize(14);
-    doc.text(`Transcript - Ticket #${ticketNumber}`, margin, y);
-    doc.text(`Transcript Report`, margin, y);
-    y += 20;
-    doc.setFontSize(12);
-    doc.text(`Ticket #: ${ticketNumber}`, margin, y);
-    y += 20;
-    doc.text(`Customer Name: ${customerName}`, margin, y);
-    y += 30;
+    const wrapText = (text, maxWidth) =>
+      doc.splitTextToSize(text || '', maxWidth);
   
-    // // Add transcript body
-    // textLines.forEach((line) => {
-    //   if (y + lineHeight > pageHeight - margin) {
-    //     doc.addPage();
-    //     y = margin;
-    //   }
-    //   doc.text(line, margin, y);
-    //   y += lineHeight;
-    // });
-  
-
-    // Summary Section
-    doc.setFontSize(13);
-    doc.text("Summary:", margin, y);
-    y += 20;
-    const summaryText = document.querySelector(".summary-content")?.innerText || '';
-    const summaryLines = doc.splitTextToSize(summaryText, doc.internal.pageSize.width - margin * 2);
-    summaryLines.forEach(line => {
-      if (y + lineHeight > pageHeight - margin) {
-            doc.addPage();
-            y = margin;
-          }
-          doc.text(line, margin, y);
-          y += lineHeight;
-        });
-    // doc.save('transcript.pdf');
-
-    y += 20;
-
-    // Concerns & Requests Section
-    doc.setFontSize(13);
-    doc.text("Concerns & Requests:", margin, y);
-    y += 20;
-    const concernsRequestsText = document.querySelector(".concerns-requests-container")?.innerText || '';
-    const concernsLines = doc.splitTextToSize(concernsRequestsText, doc.internal.pageSize.width - margin * 2);
-    concernsLines.forEach(line => {
+    // Helper to print a section
+    const printSection = (title, contentLines) => {
       if (y + lineHeight > pageHeight - margin) {
         doc.addPage();
         y = margin;
       }
-      doc.text(line, margin, y);
-      y += lineHeight;
-    });
-    y += 20;
-
-    // To-Do List Section
-    doc.setFontSize(13);
-    doc.text("To-Do List:", margin, y);
-    y += 20;
-    const todoItems = document.querySelectorAll(".todo-container li");
-    todoItems.forEach(item => {
-      if (y + lineHeight > pageHeight - margin) {
-        doc.addPage();
-        y = margin;
-      }
-      doc.text(`• ${item.innerText}`, margin, y);
-      y += lineHeight;
-    });
-    y += 20;
-
-    // Transcript Section
-    doc.setFontSize(13);
-    doc.text("Transcript:", margin, y);
-    y += 20;
-    utterances.forEach((utt) => {
-      const transcriptLine = `${utt.speaker === "A" ? "Agent" : "Customer"}: ${utt.text}`;
-      const lines = doc.splitTextToSize(transcriptLine, doc.internal.pageSize.width - margin * 2);
-      lines.forEach(line => {
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.text(title, margin, y);
+      y += lineHeight + 4;
+  
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'normal');
+      contentLines.forEach(line => {
         if (y + lineHeight > pageHeight - margin) {
           doc.addPage();
           y = margin;
@@ -209,10 +235,64 @@ function TranscriptPage() {
         doc.text(line, margin, y);
         y += lineHeight;
       });
-    });
-
-    doc.save('transcript_report.pdf');
-
+  
+      y += 10; // space between sections
+    };
+  
+    // Section: Header
+    doc.setFontSize(16);
+    doc.setFont(undefined, 'bold');
+    doc.text(`Transcript Report - Ticket #${ticketNumber}`, margin, y);
+    y += 30;
+  
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Customer Name: ${customerName}`, margin, y);
+    y += lineHeight;
+    doc.text(`Contact Number: ${contactNumber}`, margin, y);
+    y += 30;
+  
+    // Section: Transcript
+    const transcriptLines = utterances.map(
+      (utt) => `${utt.speaker === "A" ? "Agent" : "Customer"}: ${utt.text}`
+    );
+    printSection('Transcript', wrapText(transcriptLines.join('\n'), pageWidth - 2 * margin));
+  
+    // Section: Summary
+    if (summary?.tldr) {
+      printSection('Summary', wrapText(summary.tldr, pageWidth - 2 * margin));
+    }
+  
+    // Section: Concerns
+    if (summary?.issue || summary?.request) {
+      const concerns = summary.issue?.split(';').map(s => s.trim()).filter(Boolean) || [];
+      const requests = summary.request?.split(';').map(s => s.trim()).filter(Boolean) || [];
+      const concernLines = [
+        'Concerns:',
+        ...concerns.map((c) => `- ${c.charAt(0).toUpperCase() + c.slice(1)}`),
+        '',
+        'Requests:',
+        ...requests.map((r) => `- ${r.charAt(0).toUpperCase() + r.slice(1)}`)
+      ];
+      printSection('Concerns & Requests', concernLines);
+    }
+  
+    // Section: Tasks
+    if (summary?.task) {
+      const tasks = summary.task.split(';').map(t => t.trim()).filter(Boolean);
+      const taskLines = tasks.map((t) => `- ${t.charAt(0).toUpperCase() + t.slice(1)}`);
+      printSection('To-Do Tasks', taskLines);
+    }
+  
+    // Section: Satisfaction
+    if (sentimentData) {
+      const mood = sentimentData.mood || '😐';
+      const score = sentimentData.csat_score || 3;
+      const satisfaction = `Customer Satisfaction Score: ${score}/5 ${mood}`;
+      printSection('Customer Satisfaction', [satisfaction]);
+    }
+  
+    doc.save('Transcript_Report.pdf');
   };
 
   // const csatData = {
@@ -289,45 +369,87 @@ function TranscriptPage() {
           </a>   
       </div>
       <div className="right-panel">
-          <div className="summary-heading">Summary</div>
-          <div className="summary-container">
-            <div className="summary-content">
-              The customer reported internet connectivity issues over the past two days. 
-              An outage was confirmed in the area, and resolution is expected within 24 hours. 
-              A refund has been processed for the downtime. No further concerns were raised.
-              The customer reported internet connectivity issues over the past two days. 
-              An outage was confirmed in the area, and resolution is expected within 24 hours. 
-              A refund has been processed for the downtime. No further concerns were raised.
-              The customer reported internet connectivity issues over the past two days. 
-              An outage was confirmed in the area, and resolution is expected within 24 hours. 
-              A refund has been processed for the downtime. No further concerns were raised.
-              The customer reported internet connectivity issues over the past two days. 
-              An outage was confirmed in the area, and resolution is expected within 24 hours. 
-              A refund has been processed for the downtime. No further concerns were raised.
-              The customer reported internet connectivity issues over the past two days. 
-              An outage was confirmed in the area, and resolution is expected within 24 hours. 
-              A refund has been processed for the downtime. No further concerns were raised.
-              The customer reported internet connectivity issues over the past two days. 
-              An outage was confirmed in the area, and resolution is expected within 24 hours. 
-              A refund has been processed for the downtime. No further concerns were raised.
+      <div className="summary-heading">Summary</div>
+            <div className="summary-container">
+              <div className="summary-content">
+                {summary && summary.tldr ? summary.tldr : "Loading summary..."}
+              </div>
             </div>
-          </div>
-          <div className='flex-box'>
-            <div className='test'>
-            <div className="concerns-requests-heading">Concerns & Requests</div>
-            <div className="concerns-requests-container">
-              <p><strong>Concerns:</strong> The customer was concerned about the reliability of their internet service.</p>
-              <p><strong>Requests:</strong> The customer requested a refund for the downtime.</p>
-            </div>
-            </div>
-            {/* To-Do List Section */}
-    <div className='test'>       
-    <div className="todo-heading">To-Do List</div>
-    <TodoList fromTranscript />
-    </div> 
-    {/* Customer Satisfaction Section */}
-    
+            <div className='flex-box'>
+              <div className='test'>
+              <div className="concerns-requests-heading">Concerns & Requests</div>
+<div className="concerns-requests-container">
+  {loadingSummary ? (
+    <p>Loading...</p>
+  ) : (
+    <div className="concerns-requests-scrollable">
+      {/* Concerns */}
+      <div className="concerns-section">
+        <h5>Concerns</h5>
+        {summary.issue ? (
+          <ul>
+            {capitalizeSentence(summary.issue).map((concern, index) => (
+              <li key={index}>{concern}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>No concerns provided.</p>
+        )}
       </div>
+
+      {/* Requests */}
+      <div className="requests-section">
+        <h5>Requests</h5>
+        {summary.request ? (
+          <ul>
+            {capitalizeSentence(summary.request).map((req, index) => (
+              <li key={index}>{req}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>No requests provided.</p>
+        )}
+      </div>
+
+      {/* Categories */}
+      <div className="categories-tabs">
+        <h5>Categories</h5>
+        {summary.category ? (
+          <div className="tabs">
+            {capitalizeSentence(summary.category).map((cat, index) => (
+              <button key={index} className="tab-button">
+                {cat}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p>No categories provided.</p>
+        )}
+      </div>
+    </div>
+  )}
+
+</div>
+         
+      
+
+             
+            
+            </div>
+            <div className='test'>       
+    <div className="todo-heading">To-Do List</div>
+    <TodoList
+  tasks={
+    summary?.task
+      ? capitalizeTaskItems(summary.task)
+      : []
+  }
+  loading={loadingTasks}
+/>
+
+    </div> 
+    
+            </div>
       <div className='flex-box-satisfaction'>
         <div className='width-100'>
           <div className="satisfaction-heading">Customer Satisfaction</div>

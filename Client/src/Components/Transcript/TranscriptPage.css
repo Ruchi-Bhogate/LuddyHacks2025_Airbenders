@@ -69,7 +69,7 @@
   border-radius: 10px;
   overflow-y: auto;
   overflow-x: hidden; /* ✅ Prevent horizontal scroll */
-  height: 400px;       /* ✅ Increased height */
+  height: 550px;       /* ✅ Increased height */
   color: #f1f1f1;
   white-space: pre-wrap; /* ✅ Wrap long lines */
   word-wrap: break-word; /* ✅ Break long words if needed */
@@ -159,6 +159,7 @@
 }
 
 .satisfaction-container,.pie-chart-block {
+  height:300px;
   background-color: #2a2a3d;
   padding: 20px;
   border-radius: 10px;
@@ -198,7 +199,9 @@
   flex-direction: column;
   gap: 10px;
 }
-
+.satisfaction-container{
+  justify-content: center;
+}
 .satisfaction-container, .pie-chart-block {
   display: flex;
   flex-direction: column;
@@ -247,12 +250,14 @@
 .flex-box-satisfaction{
   display: flex;
   width: 100%;
+  height: 300px;
 }
 .width-100{
   width: 50%;
 }
 .width-{
-  width: 50%
+  width: 50%;
+  
 }
 .recharts-default-legend li {
   margin-right: 5px !important;
