@@ -192,10 +192,18 @@ const client = new Mistral({apiKey: apiKey});
 export async function generateCallSummary(transcript) {
     const prompt = `
     You are a helpful assistant that reads customer support call transcripts.
+    Extract customer concerns, complaints, and objections.
+    List all follow-up tasks mentioned in the call transcript, including the responsible party and any deadlines.
     Please summarize the following transcript and return ONLY a valid JSON object with the following format (and no extra text):
     
     {
-      "tldr": "A brief summary of the call"
+      "tldr": "A brief summary of the call",
+      "issue": "short description",
+      "category": "e.g. billing, product, delay, etc.",
+      "task": "description", 
+      "owner": "Agent/Customer", 
+      "deadline": "if any, else null" 
+
     }
     
     Transcript:
@@ -229,84 +237,84 @@ export async function generateCallSummary(transcript) {
 /**
  * extractObjections uses an instruct model to extract customer objections.
  */
-export async function extractObjections(transcript) {
+// export async function extractObjections(transcript) {
 
-const prompt = `
-Extract customer concerns, complaints, and objections from the following call transcript.
-Return ONLY a valid JSON array of objects in this exact format (with no additional text or commentary):
+// const prompt = `
+// Extract customer concerns, complaints, and objections from the following call transcript.
+// Return ONLY a valid JSON array of objects in this exact format (with no additional text or commentary):
 
-[
-  { "issue": "short description", "category": "e.g. billing, product, delay, etc." }
-]
+// [
+//   { "issue": "short description", "category": "e.g. billing, product, delay, etc." }
+// ]
 
-Transcript:
----
-${transcript}
----
-`;
-//   const payload = { inputs: prompt };
-  try {
-    // const response = await axios.post(HF_TEXTGEN_URL, payload, {
-    //   headers: { Authorization: `Bearer ${HF_API_TOKEN}` }
-    // });
-    // Expecting a field 'generated_text' in the response.
+// Transcript:
+// ---
+// ${transcript}
+// ---
+// `;
+// //   const payload = { inputs: prompt };
+//   try {
+//     // const response = await axios.post(HF_TEXTGEN_URL, payload, {
+//     //   headers: { Authorization: `Bearer ${HF_API_TOKEN}` }
+//     // });
+//     // Expecting a field 'generated_text' in the response.
 
-    const response = await client.chat.complete({
-        model: 'mistral-tiny',
-        messages: [{role: 'user', content: prompt}],
-      });
+//     const response = await client.chat.complete({
+//         model: 'mistral-tiny',
+//         messages: [{role: 'user', content: prompt}],
+//       });
 
-    // const outputText = response.data.generated_text || (Array.isArray(response.data) && response.data[0].generated_text);
-    const outputText = response.choices[0].message.content;
-    try {
-      return JSON.parse(outputText);
-    } catch (err) {
-      console.error("Error parsing objections JSON:", outputText);
-      return [];
-    }
-  } catch (error) {
-    console.error("Error in extractObjections:", error.response?.data || error.message);
-    throw error;
-  }
-}
+//     // const outputText = response.data.generated_text || (Array.isArray(response.data) && response.data[0].generated_text);
+//     const outputText = response.choices[0].message.content;
+//     try {
+//       return JSON.parse(outputText);
+//     } catch (err) {
+//       console.error("Error parsing objections JSON:", outputText);
+//       return [];
+//     }
+//   } catch (error) {
+//     console.error("Error in extractObjections:", error.response?.data || error.message);
+//     throw error;
+//   }
+// }
 
-/**
- * extractActions uses an instruct model to list follow-up tasks from the transcript.
- */
-export async function extractActions(transcript) {
-const prompt = `
-List all follow-up tasks mentioned in the call transcript, including the responsible party and any deadlines.
-Return ONLY a valid JSON array of objects in this exact format (with no additional text or commentary):
+// /**
+//  * extractActions uses an instruct model to list follow-up tasks from the transcript.
+//  */
+// export async function extractActions(transcript) {
+// const prompt = `
+// List all follow-up tasks mentioned in the call transcript, including the responsible party and any deadlines.
+// Return ONLY a valid JSON array of objects in this exact format (with no additional text or commentary):
 
-[
-  { "task": "description", "owner": "Agent/Customer", "deadline": "if any, else null" }
-]
+// [
+//   { "task": "description", "owner": "Agent/Customer", "deadline": "if any, else null" }
+// ]
 
-Transcript:
----
-${transcript}
----
-`;
+// Transcript:
+// ---
+// ${transcript}
+// ---
+// `;
   
-//   const payload = { inputs: prompt };
-  try {
-    // const response = await axios.post(HF_TEXTGEN_URL, payload, {
-    //   headers: { Authorization: `Bearer ${HF_API_TOKEN}` }
-    // });
-    const response = await client.chat.complete({
-        model: 'mistral-tiny',
-        messages: [{role: 'user', content: prompt}],
-      });
-    const outputText = response.choices[0].message.content;
-    // const outputText = response.data.generated_text || (Array.isArray(response.data) && response.data[0].generated_text);
-    try {
-      return JSON.parse(outputText);
-    } catch (err) {
-      console.error("Error parsing actions JSON:", outputText);
-      return [];
-    }
-  } catch (error) {
-    console.error("Error in extractActions:", error.response?.data || error.message);
-    throw error;
-  }
-}
+// //   const payload = { inputs: prompt };
+//   try {
+//     // const response = await axios.post(HF_TEXTGEN_URL, payload, {
+//     //   headers: { Authorization: `Bearer ${HF_API_TOKEN}` }
+//     // });
+//     const response = await client.chat.complete({
+//         model: 'mistral-tiny',
+//         messages: [{role: 'user', content: prompt}],
+//       });
+//     const outputText = response.choices[0].message.content;
+//     // const outputText = response.data.generated_text || (Array.isArray(response.data) && response.data[0].generated_text);
+//     try {
+//       return JSON.parse(outputText);
+//     } catch (err) {
+//       console.error("Error parsing actions JSON:", outputText);
+//       return [];
+//     }
+//   } catch (error) {
+//     console.error("Error in extractActions:", error.response?.data || error.message);
+//     throw error;
+//   }
+// }
