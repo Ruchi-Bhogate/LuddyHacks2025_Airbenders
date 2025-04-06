@@ -16,7 +16,6 @@
   background: linear-gradient(135deg, #1f1c2c, #928dab);
   padding: 40px;
   color: #fff;
-  animation: fadeIn 2s ease-in;
 }
 
 .product-name {

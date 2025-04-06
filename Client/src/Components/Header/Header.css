@@ -47,7 +47,7 @@
     align-items: center;
   }
   
-  .right-section1.button {
+  .call-records-btn,  .dashboard-btn, .profile-btn{
     background-color: #2a2a3d;
     color: white;
     padding: 8px 15px;
@@ -61,7 +61,7 @@
     transition: background-color 0.3s ease;
   }
   
-  .right-section1.button:hover {
+  .dashboard-btn:hover,  .call-records-btn:hover{
     background-color: #9b59b6;
   }
   

@@ -138,9 +138,45 @@ function TranscriptPage() {
               A refund has been processed for the downtime. No further concerns were raised.
             </div>
           </div>
-          <div className="summary-heading">Summary</div>
-        </div>
+          <div className='flex-box'>
+            <div className='test'>
+            <div className="concerns-requests-heading">Concerns & Requests</div>
+            <div className="concerns-requests-container">
+              <p><strong>Concerns:</strong> The customer was concerned about the reliability of their internet service.</p>
+              <p><strong>Requests:</strong> The customer requested a refund for the downtime.</p>
+            </div>
+            </div>
+            {/* To-Do List Section */}
+    <div className='test'>       
+    <div className="todo-heading">To-Do List</div>
+    <div className="todo-container">
+      <ul>
+        <li>Process refund for the downtime</li>
+        <li>Confirm service restoration</li>
+        <li>Follow up with the customer in 24 hours</li>
+      </ul>
     </div>
+    </div> 
+    {/* Customer Satisfaction Section */}
+    
+      </div>
+      <div> 
+    <div className="satisfaction-heading">Customer Satisfaction</div>
+    <div className="satisfaction-container">
+      <div className="emoji">
+        <span role="img" aria-label="happy">😊</span>
+      </div>
+      <div className="satisfaction-scale">
+        <span>Not Satisfied</span>
+        <div className="scale-bar">
+          <div className="filled-bar" style={{ width: '80%' }}></div>
+        </div>
+        <span>Satisfied</span>
+      </div>
+          </div>
+      </div>
+      </div>
+      </div>
     </div>
   </div>
   );
