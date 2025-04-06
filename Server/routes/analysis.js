@@ -192,17 +192,16 @@ const client = new Mistral({apiKey: apiKey});
 export async function generateCallSummary(transcript) {
     const prompt = `
     You are a helpful assistant that reads customer support call transcripts.
-    Extract customer concerns, complaints, and objections.
-    List all follow-up tasks mentioned in the call transcript, including the responsible party and any deadlines.
+    Extract customer concerns, complaints, objections and requests.
+    List all follow-up tasks mentioned in the call transcript.
     Please summarize the following transcript and return ONLY a valid JSON object with the following format (and no extra text):
     
     {
       "tldr": "A brief summary of the call",
-      "issue": "short description",
-      "category": "e.g. billing, product, delay, etc.",
-      "task": "description", 
-      "owner": "Agent/Customer", 
-      "deadline": "if any, else null" 
+      "issue": "short description of customer concerns, complaints, objections. separate issue by a semicolon",
+      "category": "e.g. billing;product;delay, etc. separate each category by a semicolon",
+      "request": "description of requests made by customer. separate each request by a semicolon"
+      "task": "description of follow up tasks. separate each task by semicolon", 
 
     }
     
