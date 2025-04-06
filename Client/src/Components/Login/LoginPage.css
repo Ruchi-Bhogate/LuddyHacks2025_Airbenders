@@ -1,5 +1,3 @@
-/* LoginPage.css */
-
 .login-page {
   display: flex;
   height: 100vh;
@@ -22,17 +20,36 @@
 }
 
 .product-name {
-  font-size: 3rem;
-  margin-bottom: 40px;
+  font-size: 4rem; /* Increased size for visibility */
+  margin-bottom: 10px;
   color: #e0b3ff;
   font-weight: bold;
   letter-spacing: 1px;
+  text-align: center;
+}
+
+.tagline {
+  font-size: 1.5rem; /* Adjusted font size for tagline */
+  color: white;  /* Change the color of the tagline */
+  margin-bottom: 40px;
+  text-align: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Keeping it consistent with the overall theme */
+}
+
+.static-line {
+  font-size: 1.3rem; /* Slightly smaller size for the static line */
+  color: #a9a9a9; /* Changed color to a softer grey */
+  font-family: 'Arial', sans-serif; /* Changed font to a more neutral one */
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .animated-line {
-  font-size: 1.5rem;
+  font-size: 1.3rem; /* Slightly larger size for the animated line */
   text-align: center;
   min-height: 2em;
+  color: #a9a9a9; /* Matching the color of the animated lines with the product name */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Same font family */
   transition: all 0.8s ease;
 }
 
@@ -51,7 +68,7 @@
   padding: 40px;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  width: 300px;
+  width: 400px;
   text-align: center;
 }
 

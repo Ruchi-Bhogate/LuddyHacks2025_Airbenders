@@ -1,70 +1,148 @@
-import React, { useState } from 'react';
-import { Tabs, Tab } from 'react-bootstrap'; // You can install react-bootstrap for tabs
+import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import './TranscriptPage.css';
+import Header from '../Header/Header';
+import jsPDF from 'jspdf';
 
 function TranscriptPage() {
-  const [key, setKey] = useState('full-transcript'); // Default tab
+  const location = useLocation();
+  const uploadedFile = location.state?.fileName;
+  const audioSrc = uploadedFile ? `http://localhost:4000/media/audio/${uploadedFile}` : '/sample-audio.mp3';
+  console.log("📢 audioSrc:", audioSrc);
 
-  const dummyTranscript = `
-    Customer: Hi, I need help with my recent purchase.
-    Helper: Sure, I'd be happy to assist you. What seems to be the problem?
-    Customer: The product I received was damaged.
-    Helper: Oh, that's unfortunate. Could you describe the issue?
-    Customer: Yes, the screen is cracked.
-    Helper: I see. We can help you with a return or exchange.
-    Customer: I'd prefer an exchange, please.
-    Helper: Noted. I will process the exchange for you right away.
-    Customer: Thank you so much for your help!
-    Helper: You're welcome. Have a great day!
-  `;
+  const ticketNumber = '123456';
+  const customerName = 'John Doe';
+  const contactNumber = '+1 (555) 123-4567';
 
-  const dummySummary = "The customer reported receiving a damaged product. The screen was cracked, and the customer preferred an exchange. The helper processed the exchange immediately.";
+  const [utterances, setUtterances] = useState([]);
+  const [currentTime, setCurrentTime] = useState(0);
+  const audioRef = useRef(null);
+  const utteranceRefs = useRef([]);
 
-  const dummyComplaints = ["Cracked screen", "Received wrong product"];
-  const dummyToDoList = ["Process the exchange", "Follow-up on the delivery date", "Update the customer status"];
+  const transcriptId = location.state?.transcriptId;
+  
+  const transcriptText = ''; // placeholder since we're using utterances now
 
+  useEffect(() => {
+    if (!transcriptId) return;
+    fetch(`http://localhost:4000/api/transcribe/transcribe/result/${transcriptId}`)
+      .then(res => res.json())
+      .then(data => {
+        setUtterances(data.utterances || []);
+      });
+  }, [transcriptId]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const updateTime = () => setCurrentTime(audio.currentTime * 1000); // convert to ms
+    audio.addEventListener("timeupdate", updateTime);
+
+    return () => audio.removeEventListener("timeupdate", updateTime);
+  }, []);
+
+  useEffect(() => {
+    const activeIndex = utterances.findIndex(
+      (utt) => currentTime >= utt.start && currentTime <= utt.end
+    );
+    if (activeIndex !== -1 && utteranceRefs.current[activeIndex]) {
+      utteranceRefs.current[activeIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [currentTime, utterances]);
+
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'pt',
+      format: 'a4',
+    });
+  
+    const margin = 40;
+    const pageHeight = doc.internal.pageSize.height;
+    const lineHeight = 20;
+  
+    const textLines = doc.splitTextToSize(transcriptText, doc.internal.pageSize.width - margin * 2);
+    let y = margin;
+  
+    // Add heading
+    doc.setFontSize(14);
+    doc.text(`Transcript - Ticket #${ticketNumber}`, margin, y);
+    y += 30;
+  
+    // Add transcript body
+    textLines.forEach((line) => {
+      if (y + lineHeight > pageHeight - margin) {
+        doc.addPage();
+        y = margin;
+      }
+      doc.text(line, margin, y);
+      y += lineHeight;
+    });
+  
+    doc.save('transcript.pdf');
+  };
+  
   return (
-    <div className="transcript-container">
-      <div className="transcript-header">
-        <h2>Ticket #12345</h2>
-        <p><strong>Customer Name:</strong> John Doe</p>
-        <p><strong>Contact Number:</strong> +1 234 567 890</p>
+    <div>
+      <Header />
+      <div className="transcript-page">
+      <div className="info-bar">
+        <span><strong>Ticket #:</strong> {ticketNumber}</span>
+        <span><strong>Name:</strong> {customerName}</span>
+        <span><strong>Contact:</strong> {contactNumber}</span>
       </div>
 
-      <Tabs id="transcript-tabs" activeKey={key} onSelect={(k) => setKey(k)} className="mb-3">
-        <Tab eventKey="conversation" title="Conversation Transcript">
-          <div className="tab-content">
-            <p><strong>Customer:</strong> Hi, I need help with my recent purchase.</p>
-            <p><strong>Helper:</strong> Sure, I'd be happy to assist you. What seems to be the problem?</p>
-            {/* You can continue to break down the conversation in this format */}
+      {/* We'll add tabs and content here next */}
+      <div className="transcript-body">
+        {/* Left Panel */}
+        <div className="left-panel">
+          <div className="audio-heading">Audio Recording</div>
+          <div className="audio-player">
+            <audio controls ref={audioRef}>
+              <source src={audioSrc} type="audio/mp3" />
+              Your browser does not support the audio element.
+            </audio>
+            {/* Optional: Add a comment about highlighting sync */}
           </div>
-        </Tab>
-        <Tab eventKey="summary" title="Summary">
-          <div className="tab-content">
-            <p>{dummySummary}</p>
+
+          <div className="transcript-heading">Transcript Conversation</div>
+
+          <div className="transcript-container">
+            {utterances.map((utt, index) => {
+              const isActive = currentTime >= utt.start && currentTime <= utt.end;
+              return (
+                <p
+                  key={index}
+                  ref={(el) => (utteranceRefs.current[index] = el)}
+                  className={isActive ? "active-utterance" : ""}
+                >
+                  <span className={`speaker-label ${utt.speaker}`}>
+                    {utt.speaker === "A" ? "🧑‍💼 Agent" : utt.speaker === "B" ? "🧑‍💻 Customer" : utt.speaker}
+                  </span> {utt.text}
+                </p>
+              );
+            })}
           </div>
-        </Tab>
-        <Tab eventKey="complaints" title="Complaints, Requests & Concerns">
-          <div className="tab-content">
-            <ul>
-              {dummyComplaints.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
+
+          <a onClick={handleDownloadPDF} className="download-link">
+            Download as PDF
+          </a>   
+      </div>
+      <div className="right-panel">
+          <div className="summary-heading">Summary</div>
+          <div className="summary-container">
+            <div className="summary-content">
+              The customer reported internet connectivity issues over the past two days. 
+              An outage was confirmed in the area, and resolution is expected within 24 hours. 
+              A refund has been processed for the downtime. No further concerns were raised.
+            </div>
           </div>
-        </Tab>
-        <Tab eventKey="todo" title="To-Do List">
-          <div className="tab-content">
-            <ul>
-              {dummyToDoList.map((task, index) => (
-                <li key={index}>{task}</li>
-              ))}
-            </ul>
-          </div>
-        </Tab>
-      </Tabs>
+          <div className="summary-heading">Summary</div>
+        </div>
     </div>
+    </div>
+  </div>
   );
 }
-
 export default TranscriptPage;

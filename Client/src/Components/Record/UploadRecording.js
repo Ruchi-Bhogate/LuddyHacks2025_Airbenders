@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './UploadRecording.css'; // Import the CSS
 
 function UploadRecording() {
   const [ticketNumber, setTicketNumber] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [file, setFile] = useState(null);
+  const navigate = useNavigate();
 
   const handleUpload = async () => {
     if (!file || !ticketNumber || !contactNumber) {
@@ -38,7 +40,7 @@ function UploadRecording() {
 
       const transcribeData = await transcribeResponse.json();
       alert(`Transcription started! Transcript ID: ${transcribeData.transcriptId}`);
-      console.log("Transcription started:", transcribeData);
+      navigate("/transcript", { state: { fileName: uploadData.fileName, transcriptId: transcribeData.transcriptId } });
     } catch (error) {
       console.error("Upload or transcription failed:", error);
       alert("Upload or transcription failed.");
