@@ -6,6 +6,7 @@ function UploadRecording() {
   const [ticketNumber, setTicketNumber] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [file, setFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleUpload = async () => {
@@ -14,6 +15,8 @@ function UploadRecording() {
       return;
     }
 
+    setIsLoading(true);
+
     const formData = new FormData();
     formData.append("media", file);
     formData.append("ticketNumber", ticketNumber);
@@ -21,13 +24,12 @@ function UploadRecording() {
 
     try {
       // Step 1: Upload the file
-      const uploadResponse = await fetch("http://localhost:4000/upload", {
+      const uploadResponse = await fetch("http://localhost:4000/api/transcribe/upload", {
         method: "POST",
         body: formData,
       });
 
       const uploadData = await uploadResponse.json();
-      alert(`Upload successful! File path: ${uploadData.filePath}`);
 
       // Step 2: Trigger transcription
       const transcribeResponse = await fetch("http://localhost:4000/api/transcribe/transcribe/start", {
@@ -39,10 +41,10 @@ function UploadRecording() {
       });
 
       const transcribeData = await transcribeResponse.json();
-      alert(`Transcription started! Transcript ID: ${transcribeData.transcriptId}`);
       navigate("/transcript", { state: { fileName: uploadData.fileName, transcriptId: transcribeData.transcriptId } });
     } catch (error) {
       console.error("Upload or transcription failed:", error);
+      setIsLoading(false);
       alert("Upload or transcription failed.");
     }
   };
@@ -50,6 +52,12 @@ function UploadRecording() {
   return (
     <div className="upload-recording-container">
       <div className="upload-recording-box">
+        {isLoading && (
+          <div style={{ marginBottom: '20px' }}>
+            <div className="loader"></div>
+            <p style={{ color: 'white' }}>Processing your upload...</p>
+          </div>
+        )}
         <h2>Upload Recording</h2>
         <input
           type="text"

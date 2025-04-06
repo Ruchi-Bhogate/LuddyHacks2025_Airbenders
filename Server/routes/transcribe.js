@@ -268,4 +268,22 @@ router.get("/media/audio/:fileName", (req, res) => {
   }
   res.sendFile(filePath);
 });
+
+// New route for checking transcription progress
+router.get("/progress/:id", async (req, res) => {
+  try {
+    const transcriptId = req.params.id;
+    const response = await axios.get(`https://api.assemblyai.com/v2/transcript/${transcriptId}`, { headers });
+
+    const status = response.data.status;
+    const utterances = response.data.utterances || [];
+
+    return res.json({ status, utterances });
+  } catch (err) {
+    console.error("Polling error:", err.message);
+    return res.status(500).json({ error: "Polling failed", details: err.message });
+  }
+
+  
+});
 export default router;

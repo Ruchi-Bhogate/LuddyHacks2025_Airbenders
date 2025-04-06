@@ -258,3 +258,13 @@
 .recharts-default-legend li {
   margin-right: 5px !important;
 }
+.transcript-container p {
+  opacity: 0;
+  animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
