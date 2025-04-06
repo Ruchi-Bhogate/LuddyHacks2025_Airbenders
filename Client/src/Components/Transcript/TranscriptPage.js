@@ -21,7 +21,7 @@ function TranscriptPage() {
 
   const transcriptId = location.state?.transcriptId;
   
-  const transcriptText = ''; // placeholder since we're using utterances now
+  // const transcriptText = ''; // placeholder since we're using utterances now
 
   useEffect(() => {
     if (!transcriptId) return;
@@ -62,16 +62,56 @@ function TranscriptPage() {
     const pageHeight = doc.internal.pageSize.height;
     const lineHeight = 20;
   
-    const textLines = doc.splitTextToSize(transcriptText, doc.internal.pageSize.width - margin * 2);
+    // const textLines = doc.splitTextToSize(transcriptText, doc.internal.pageSize.width - margin * 2);
     let y = margin;
   
     // Add heading
     doc.setFontSize(14);
     doc.text(`Transcript - Ticket #${ticketNumber}`, margin, y);
+    doc.text(`Transcript Report`, margin, y);
+    y += 20;
+    doc.setFontSize(12);
+    doc.text(`Ticket #: ${ticketNumber}`, margin, y);
+    y += 20;
+    doc.text(`Customer Name: ${customerName}`, margin, y);
     y += 30;
   
-    // Add transcript body
-    textLines.forEach((line) => {
+    // // Add transcript body
+    // textLines.forEach((line) => {
+    //   if (y + lineHeight > pageHeight - margin) {
+    //     doc.addPage();
+    //     y = margin;
+    //   }
+    //   doc.text(line, margin, y);
+    //   y += lineHeight;
+    // });
+  
+
+    // Summary Section
+    doc.setFontSize(13);
+    doc.text("Summary:", margin, y);
+    y += 20;
+    const summaryText = document.querySelector(".summary-content")?.innerText || '';
+    const summaryLines = doc.splitTextToSize(summaryText, doc.internal.pageSize.width - margin * 2);
+    summaryLines.forEach(line => {
+      if (y + lineHeight > pageHeight - margin) {
+            doc.addPage();
+            y = margin;
+          }
+          doc.text(line, margin, y);
+          y += lineHeight;
+        });
+    // doc.save('transcript.pdf');
+
+    y += 20;
+
+    // Concerns & Requests Section
+    doc.setFontSize(13);
+    doc.text("Concerns & Requests:", margin, y);
+    y += 20;
+    const concernsRequestsText = document.querySelector(".concerns-requests-container")?.innerText || '';
+    const concernsLines = doc.splitTextToSize(concernsRequestsText, doc.internal.pageSize.width - margin * 2);
+    concernsLines.forEach(line => {
       if (y + lineHeight > pageHeight - margin) {
         doc.addPage();
         y = margin;
@@ -79,8 +119,42 @@ function TranscriptPage() {
       doc.text(line, margin, y);
       y += lineHeight;
     });
-  
-    doc.save('transcript.pdf');
+    y += 20;
+
+    // To-Do List Section
+    doc.setFontSize(13);
+    doc.text("To-Do List:", margin, y);
+    y += 20;
+    const todoItems = document.querySelectorAll(".todo-container li");
+    todoItems.forEach(item => {
+      if (y + lineHeight > pageHeight - margin) {
+        doc.addPage();
+        y = margin;
+      }
+      doc.text(`• ${item.innerText}`, margin, y);
+      y += lineHeight;
+    });
+    y += 20;
+
+    // Transcript Section
+    doc.setFontSize(13);
+    doc.text("Transcript:", margin, y);
+    y += 20;
+    utterances.forEach((utt) => {
+      const transcriptLine = `${utt.speaker === "A" ? "Agent" : "Customer"}: ${utt.text}`;
+      const lines = doc.splitTextToSize(transcriptLine, doc.internal.pageSize.width - margin * 2);
+      lines.forEach(line => {
+        if (y + lineHeight > pageHeight - margin) {
+          doc.addPage();
+          y = margin;
+        }
+        doc.text(line, margin, y);
+        y += lineHeight;
+      });
+    });
+
+    doc.save('transcript_report.pdf');
+
   };
   
   return (
