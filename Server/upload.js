@@ -1,3 +1,5 @@
+const express = require("express");
+const router = express.Router();
 const multer = require("multer");
 const upload = multer({ dest: "audio/" });
 
@@ -9,3 +11,5 @@ router.post("/upload", upload.single("media"), async (req, res) => {
 
   return res.json({ message: "File uploaded", filePath, fileName });
 });
+
+module.exports = router;
