@@ -197,7 +197,7 @@ export async function generateCallSummary(transcript) {
     Please summarize the following transcript and return ONLY a valid JSON object with the following format (and no extra text):
     
     {
-      "tldr": "A brief summary of the call",
+      "tldr": "A brief summary of the call not more than 2-3 lines",
       "issue": "short description of customer concerns, complaints, objections. separate issue by a semicolon",
       "category": "e.g. billing;product;delay, etc. separate each category by a semicolon",
       "request": "description of requests made by customer. separate each request by a semicolon"

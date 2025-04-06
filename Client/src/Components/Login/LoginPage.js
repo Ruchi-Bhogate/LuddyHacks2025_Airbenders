@@ -29,12 +29,23 @@ function LoginPage() {
   }, []);
 
   const handleLogin = () => {
-    if (email && password) {
-      // Simulate successful login
-      navigate('/'); // Redirect to home (root route) after login
-    } else {
-      alert("Please enter valid email and password.");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+    if (!email || !password) {
+      alert("Please fill in both email and password.");
+      return;
     }
+  
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+  
+    if (password.length < 6) {
+      alert("Password should be at least 6 characters long.");
+      return;
+    }
+    navigate('/');
   };
 
   return (

@@ -42,7 +42,7 @@
   color: #e0b3ff;
 }
 .audio-player {
-  height: 25%;
+  height: 150px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -87,16 +87,17 @@
 }
 
 .download-link {
-  display: block;
+  background: none;
+  border: none;
+  padding: 0;
   margin-left: auto;
   color: #e0b3ff;
   font-weight: bold;
   text-align: right;
   text-decoration: underline;
   cursor: pointer;
-  width: fit-content;
+  font-size: 1rem;
 }
-
 .download-link:hover {
   color: #d7a7ff;
 }
@@ -121,8 +122,8 @@
   color: #f1f1f1;
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
   overflow-y: auto;
-  height: 25%;
-  margin-bottom: 10px;
+  height: 150px;
+  margin-bottom: 20px;
 }
 
 .summary-content {
@@ -158,9 +159,7 @@
   justify-content: space-between; /* Ensures spacing between the three sections */
 }
 
-.concerns-requests-container,
-.todo-container,
-.satisfaction-container {
+.satisfaction-container,.pie-chart-block {
   background-color: #2a2a3d;
   padding: 20px;
   border-radius: 10px;
@@ -171,14 +170,29 @@
   overflow-y: auto; /* Enables vertical scrolling */
 }
 
+.concerns-requests-container {
+  height: 300px; 
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #2a2a3d;
+  padding: 20px;
+  border-radius: 10px;
+  color: #f1f1f1;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+
 .concerns-requests-heading,
 .todo-heading,
-.satisfaction-heading {
+.satisfaction-heading, .chart-heading {
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 10px;
   color: #e0b3ff;
 }
+
 
 .concerns-requests-container {
   display: flex;
@@ -186,13 +200,15 @@
   gap: 10px;
 }
 
-.satisfaction-container {
+.satisfaction-container, .pie-chart-block {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
 }
-
+.satisfaction-container{
+  margin-right: 10px;
+}
 .emoji {
   font-size: 3rem;
 }
@@ -210,6 +226,7 @@
   background-color: #ddd;
   border-radius: 5px;
   position: relative;
+  margin: 0px 5px;
 }
 
 .filled-bar {
@@ -227,4 +244,17 @@
 }
 .test{
   width: 50%;
+}
+.flex-box-satisfaction{
+  display: flex;
+  width: 100%;
+}
+.width-100{
+  width: 50%;
+}
+.width-{
+  width: 50%
+}
+.recharts-default-legend li {
+  margin-right: 5px !important;
 }
