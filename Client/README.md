@@ -3,9 +3,9 @@
 
 ## 🚀 Overview
 
-CallSage is an AI-driven tool that automatically transcribes, summarizes, and analyzes customer support calls to extract valuable insights like customer sentiment, follow-up tasks, objections, and satisfaction levels — all in real-time or after the call.
+Scribbie is an AI-driven tool that automatically transcribes, summarizes, and analyzes customer support calls to extract valuable insights like customer sentiment, follow-up tasks, objections, and satisfaction levels — all in real-time or after the call.
 
-Whether you're running support, sales, or service teams, CallSage helps you:
+Whether you're running support, sales, or service teams, Scribbie helps you:
 - Save time on manual notes
 - Track customer concerns
 - Identify follow-up actions
@@ -16,7 +16,7 @@ Whether you're running support, sales, or service teams, CallSage helps you:
 
 ## 🎯 Use Case
 
-> Designed specifically for **Customer Support and Sales Calls**, CallSage acts like a virtual assistant that listens, understands, and structures your conversations into actionable insights.
+> Designed specifically for **Customer Support and Sales Calls**, Scribbie acts like a virtual assistant that listens, understands, and structures your conversations into actionable insights.
 
 ---
 
