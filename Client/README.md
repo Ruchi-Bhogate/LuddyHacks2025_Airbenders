@@ -44,12 +44,4 @@ Whether you're running support, sales, or service teams, CallSage helps you:
 | File Handling| Multer, fs                       |
 | PDF Export   | jsPDF                            |
 
----
 
-## 🖥️ Setup Instructions
-
-### 1. Clone the Repo
-
-```bash
-git clone https://github.com/your-username/CallSage.git
-cd CallSage
