@@ -41,7 +41,7 @@ Whether you're running support, sales, or service teams, Scribbie helps you:
 
 | Layer        | Tech Used                        |
 |--------------|----------------------------------|
-| Frontend     | React, Tailwind CSS, Recharts    |
+| Frontend     | React, Recharts    |
 | Backend      | Node.js, Express                 |
 | AI & NLP     | AssemblyAI, Mistral, OpenAI (alt)|
 | File Handling| Multer, fs                       |
