@@ -37,6 +37,17 @@ Whether you're running support, sales, or service teams, Scribbie helps you:
 
 ---
 
+<img width="1440" alt="Screenshot 2025-04-06 at 3 46 21 PM" src="https://github.com/user-attachments/assets/5c61bd00-8f66-4a4b-9ec3-0492b81bf057" />
+
+<img width="1440" alt="Screenshot 2025-04-06 at 3 46 49 PM" src="https://github.com/user-attachments/assets/d0da1717-539f-41aa-9a5a-faf58c9fc53c" />
+
+<img width="1440" alt="Screenshot 2025-04-06 at 3 47 12 PM" src="https://github.com/user-attachments/assets/8e169727-5c09-41f9-a2ff-3451daae2ef7" />
+
+<img width="1440" alt="Screenshot 2025-04-06 at 3 47 46 PM" src="https://github.com/user-attachments/assets/3d829beb-ceae-44c6-a7ce-7b17947d21a2" />
+
+<img width="1439" alt="Screenshot 2025-04-06 at 3 47 35 PM" src="https://github.com/user-attachments/assets/70c91a51-4bd9-403b-9a69-78339708a30a" />
+
+
 ## 🛠️ Tech Stack
 
 | Layer        | Tech Used                        |
